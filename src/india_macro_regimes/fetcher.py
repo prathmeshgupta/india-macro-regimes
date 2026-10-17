@@ -34,12 +34,50 @@ class MacroFetcher:
         hist = t.history(period=period)
         records = []
         for dt, row in hist.iterrows():
-            records.append({
-                "series_id": "INDIA_VIX",
-                "trade_date": dt.strftime("%Y-%m-%d"),
-                "value": float(row["Close"]),
-                "high": float(row["High"]),
-                "low": float(row["Low"]),
-                "source": "YFINANCE_VIX"
-            })
+            if pd.notnull(row["Close"]):
+                records.append({
+                    "series_id": "INDIA_VIX",
+                    "trade_date": dt.strftime("%Y-%m-%d"),
+                    "value": float(row["Close"]),
+                    "high": float(row["High"]) if pd.notnull(row["High"]) else float(row["Close"]),
+                    "low": float(row["Low"]) if pd.notnull(row["Low"]) else float(row["Close"]),
+                    "source": "YFINANCE_VIX"
+                })
         return pd.DataFrame(records)
+
+    @staticmethod
+    def fetch_us_10y(period: str = "1y") -> pd.DataFrame:
+        import yfinance as yf
+        t = yf.Ticker("^TNX")
+        hist = t.history(period=period)
+        records = []
+        for dt, row in hist.iterrows():
+            if pd.notnull(row["Close"]):
+                records.append({
+                    "series_id": "US_10Y",
+                    "trade_date": dt.strftime("%Y-%m-%d"),
+                    "value": float(row["Close"]),
+                    "high": float(row["High"]) if pd.notnull(row["High"]) else float(row["Close"]),
+                    "low": float(row["Low"]) if pd.notnull(row["Low"]) else float(row["Close"]),
+                    "source": "YFINANCE_MACRO"
+                })
+        return pd.DataFrame(records)
+
+    @staticmethod
+    def fetch_liquidbees(period: str = "1y") -> pd.DataFrame:
+        import yfinance as yf
+        t = yf.Ticker("LIQUIDBEES.NS")
+        hist = t.history(period=period)
+        records = []
+        for dt, row in hist.iterrows():
+            if pd.notnull(row["Close"]):
+                records.append({
+                    "series_id": "LIQUIDBEES",
+                    "trade_date": dt.strftime("%Y-%m-%d"),
+                    "value": float(row["Close"]),
+                    "high": float(row["High"]) if pd.notnull(row["High"]) else float(row["Close"]),
+                    "low": float(row["Low"]) if pd.notnull(row["Low"]) else float(row["Close"]),
+                    "source": "YFINANCE_MACRO"
+                })
+        return pd.DataFrame(records)
+
